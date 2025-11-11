@@ -9,28 +9,19 @@ const {
 var tabs = [];
 var selectedTab = null;
 
-// Side bar
 const sideBar = document.querySelector("header");
-
-// Controls
 const pageBack = document.getElementById("page-back");
 const pageForward = document.getElementById("page-forward");
 const pageRefresh = document.getElementById("page-refresh");
 
-// URL Bar
 const urlForm = document.getElementById("url-form");
 const urlInput = document.getElementById("url-input");
 
-// New Tab Button
 const newTabButton = document.getElementById("new-tab");
 
-// Tab List
 const tabList = document.getElementById("tab-list");
-
-// Tab View
 const tabView = document.getElementById("tab-view");
 
-// Event Listeners
 window.onmousemove = (e) => {
   if (e.clientX < 50) {
     sideBar.classList.add("hovered");
@@ -54,14 +45,12 @@ newTabButton.onclick = () => {
   addTab("https://shadowsearching.vercel.app");
 };
 
-// Options (opt menu)
 const devtoolsOption = document.getElementById("devtools-option");
 const abcOption = document.getElementById("abc-option");
 const gitOption = document.getElementById("git-option");
 
 devtoolsOption.onclick = () => {
   try {
-    // Assuming `selectedTab.view.contentWindow` is your target window
     selectedTab.view.contentWindow.eval(eruda);
     rAlert("Injected successfully.<br>Click the icon on the bottom right.");
   } catch (error) {
@@ -106,7 +95,6 @@ function abCloak(cloakUrl) {
   win.document.body.appendChild(iframe);
 }
 
-// Objects
 const tabItem = (tab) => {
   return button(
     {
@@ -122,12 +110,10 @@ const tabItem = (tab) => {
     },
     img({ src: getFavicon(tab.url) }),
     span(tab.title),
-
     button(
       {
         onclick: () => {
           tabs.splice(tabs.indexOf(tab), 1);
-
           if (tab == selectedTab) {
             selectedTab = null;
             if (tabs.length) focusTab(tabs[tabs.length - 1]);
@@ -136,10 +122,8 @@ const tabItem = (tab) => {
                 addTab("https://shadowsearching.vercel.app");
               }, 100);
           }
-
           tabView.removeChild(tab.view);
           tab.view.remove();
-
           localStorage.setItem(
             "tabs",
             JSON.stringify(
@@ -148,7 +132,6 @@ const tabItem = (tab) => {
               })
             )
           );
-
           tab.item.style.animation = "slide-out-from-bottom 0.1s ease";
           setTimeout(() => {
             tabList.removeChild(tab.item);
@@ -172,19 +155,14 @@ const tabFrame = (tab) => {
       let targetUrl = decodeURIComponent(
         __uv$config.decodeUrl(parts[parts.length - 1])
       );
-
       tab.title = tab.view.contentWindow.document.title;
-      console.log(tab.title);
       tab.url = targetUrl;
       tabList.children[tabs.indexOf(tab)].children[1].textContent = tab.title;
       tabList.children[tabs.indexOf(tab)].children[0].src =
         getFavicon(targetUrl);
-
-      // Update URL bar
       if (tab == selectedTab) {
         urlInput.value = targetUrl;
       }
-
       localStorage.setItem(
         "tabs",
         JSON.stringify(
@@ -204,20 +182,13 @@ function focusTab(tab) {
   }
   selectedTab = tab;
   tab.view.style.display = "block";
-
-  // Update URL bar
   urlInput.value = tab.url;
-
   tabList.children[tabs.indexOf(tab)].classList.add("selectedTab");
 }
 
 async function addTab(link) {
-  let url;
-
-  url = await getUV(link);
-
+  let url = await getUV(link);
   let tab = {};
-
   tab.title = decodeURIComponent(
     __uv$config.decodeUrl(url.substring(url.lastIndexOf("/") + 1))
   ).replace(/^https?:\/\//, "");
@@ -226,7 +197,6 @@ async function addTab(link) {
   tab.icon = null;
   tab.view = tabFrame(tab);
   tab.item = tabItem(tab);
-
   tab.view.addEventListener("load", () => {
     let links = tab.view.contentWindow.document.querySelectorAll("a");
     links.forEach((element) => {
@@ -239,11 +209,8 @@ async function addTab(link) {
       });
     });
   });
-
   tabs.push(tab);
-
   tabList.appendChild(tab.item);
-
   tabView.appendChild(tab.view);
   focusTab(tab);
 }
@@ -251,13 +218,11 @@ async function addTab(link) {
 addTab("https://shadowsearching.vercel.app");
 
 const urlParams = new URLSearchParams(window.location.search);
-
 if (urlParams.has("inject")) {
   let tab = {};
   const injection = urlParams.get("inject");
-
   setTimeout(() => {
-    addTab(injection)
-    focusTab()
+    addTab(injection);
+    focusTab();
   }, 100);
 }
